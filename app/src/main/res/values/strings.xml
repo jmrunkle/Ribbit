@@ -3,7 +3,12 @@
 
     <string name="title_section1">Inbox</string>
     <string name="title_section2">Friends</string>
-
+    <string-array name="camera_choices">
+        <item>Take Picture</item>
+        <item>Take Video</item>
+        <item>Choose Picture</item>
+        <item>Choose Video</item>
+    </string-array>
     <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
