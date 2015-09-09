@@ -57,7 +57,19 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                     break;
                 case 1: // Take video
                     Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                    startActivityForResult(takeVideoIntent, TAKE_VIDEO_REQUEST);
+                    mMediaUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+                    if (mMediaUri == null) {
+                        // error
+                        Toast.makeText(MainActivity.this,
+                                R.string.error_external_storage,
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mMediaUri);
+                        takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10);
+                        takeVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+                        startActivityForResult(takeVideoIntent, TAKE_VIDEO_REQUEST);
+                    }
+
                     break;
                 case 2: // Choose picture
 //                    Intent choosePhotoIntent = new Intent();
@@ -183,6 +195,20 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                     actionBar.newTab()
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            // add it to the Gallery
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            mediaScanIntent.setData(mMediaUri);
+            sendBroadcast(mediaScanIntent);
+        } else if (resultCode != RESULT_CANCELED) {
+            Toast.makeText(this, R.string.general_error, Toast.LENGTH_LONG).show();
         }
     }
 
