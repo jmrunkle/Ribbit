@@ -1,12 +1,13 @@
 package com.teamtreehouse.ribbit;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -23,7 +24,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class EditFriendsActivity extends ListActivity {
+public class EditFriendsActivity extends AppCompatActivity {
 
     public static final String TAG = EditFriendsActivity.class.getSimpleName();
 
@@ -33,6 +34,8 @@ public class EditFriendsActivity extends ListActivity {
 
     @Bind(R.id.progressBar)
     protected ProgressBar mProgressBar;
+    @Bind(R.id.friendsListView)
+    protected ListView mFriendsListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,27 @@ public class EditFriendsActivity extends ListActivity {
         setContentView(R.layout.activity_edit_friends);
         ButterKnife.bind(this);
 
-        getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        mFriendsListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        mFriendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mFriendsListView.isItemChecked(position)) {
+                    // add friend
+                    mFriendsRelation.add(mUsers.get(position));
+                } else {
+                    // remove friend
+                    mFriendsRelation.remove(mUsers.get(position));
+                }
+                mCurrentUser.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -72,11 +95,12 @@ public class EditFriendsActivity extends ListActivity {
                         usernames[i] = user.getUsername();
                         i++;
                     }
+
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             EditFriendsActivity.this,
                             android.R.layout.simple_list_item_checked,
                             usernames);
-                    setListAdapter(adapter);
+                    mFriendsListView.setAdapter(adapter);
 
                     addFriendCheckmarks();
                 } else {
@@ -105,7 +129,7 @@ public class EditFriendsActivity extends ListActivity {
 
                                 for (ParseUser friend : friends) {
                                     if (friend.getObjectId().equals(user.getObjectId())) {
-                                        getListView().setItemChecked(i, true);
+                                        mFriendsListView.setItemChecked(i, true);
                                     }
                                 }
                             }
@@ -117,38 +141,8 @@ public class EditFriendsActivity extends ListActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        if (getListView().isItemChecked(position)) {
-            // add friend
-            mFriendsRelation.add(mUsers.get(position));
-        } else {
-            // remove friend
-            mFriendsRelation.remove(mUsers.get(position));
-        }
-        mCurrentUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        });
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

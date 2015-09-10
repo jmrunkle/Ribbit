@@ -3,8 +3,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.teamtreehouse.ribbit.RecipientsActivity">
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:id="@+id/action_send"
+        android:title="@string/menu_send_label"
         android:orderInCategory="100"
-        app:showAsAction="never"/>
+        app:showAsAction="always"
+        android:visible="false"
+        android:icon="@drawable/ic_action_send_now"/>
 </menu>

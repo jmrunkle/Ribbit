@@ -1,15 +1,18 @@
 package com.teamtreehouse.ribbit;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -22,16 +25,21 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class RecipientsActivity extends ListActivity {
+public class RecipientsActivity extends AppCompatActivity {
 
     private static final String TAG = RecipientsActivity.class.getSimpleName();
 
     protected List<ParseUser> mFriends;
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
+    protected MenuItem mSendMenuItem;
 
     @Bind(R.id.progressBar)
     protected ProgressBar mProgressBar;
+    @Bind(R.id.recipientsListView)
+    protected ListView mRecipientsListView;
+    @Bind(R.id.emptyTextView)
+    protected TextView mEmptyTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +47,17 @@ public class RecipientsActivity extends ListActivity {
         setContentView(R.layout.activity_recipients);
         ButterKnife.bind(this);
 
-        getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        mRecipientsListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        mRecipientsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mRecipientsListView.getCheckedItemCount() > 0) {
+                    mSendMenuItem.setVisible(true);
+                } else {
+                    mSendMenuItem.setVisible(false);
+                }
+            }
+        });
     }
 
     @Override
@@ -66,11 +84,15 @@ public class RecipientsActivity extends ListActivity {
                         usernames[i] = user.getUsername();
                         i++;
                     }
+                    if (i > 0) {
+                        mEmptyTextView.setVisibility(View.INVISIBLE);
+                        mRecipientsListView.setVisibility(View.VISIBLE);
+                    }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            getListView().getContext(),
+                            mRecipientsListView.getContext(),
                             android.R.layout.simple_list_item_checked,
                             usernames);
-                    setListAdapter(adapter);
+                    mRecipientsListView.setAdapter(adapter);
                 } else {
                     Log.e(TAG, e.getMessage());
                     AlertDialog.Builder builder = new AlertDialog.Builder(RecipientsActivity.this);
@@ -89,7 +111,8 @@ public class RecipientsActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_recipients, menu);
-        return true;
+        mSendMenuItem = menu.getItem(0);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -100,10 +123,11 @@ public class RecipientsActivity extends ListActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
+
 }
