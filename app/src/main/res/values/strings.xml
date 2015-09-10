@@ -37,4 +37,6 @@
     <string name="video_file_size_warning">The selected video must be less than 10 MB</string>
     <string name="error_opening_file">There was a problem with the selected file.</string>
     <string name="error_file_size_too_large">The selected file is too large! Select a new file.</string>
+    <string name="title_activity_recipients">Choose Recipients</string>
+    <string name="empty_recipients_list_message">Choose some friends first!</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.teamtreehouse.ribbit;
 
 import android.app.Application;
-import android.widget.Toast;
 
 import com.parse.Parse;
 
@@ -22,7 +21,5 @@ public class RibbitApplication extends Application {
         /*ParseObject testObject = new ParseObject("TestObject");
         testObject.put("foo", "bar");
         testObject.saveInBackground();*/
-
-        Toast.makeText(this, "Running RibbitApplication onCreate()", Toast.LENGTH_LONG).show();
     }
 }
