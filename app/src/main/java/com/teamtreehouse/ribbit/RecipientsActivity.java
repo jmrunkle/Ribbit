@@ -1,6 +1,7 @@
 package com.teamtreehouse.ribbit;
 
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,6 +36,8 @@ public class RecipientsActivity extends AppCompatActivity {
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
     protected MenuItem mSendMenuItem;
+    protected Uri mMediaUri;
+    protected String mFileType;
 
     @Bind(R.id.progressBar)
     protected ProgressBar mProgressBar;
@@ -48,6 +51,9 @@ public class RecipientsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipients);
         ButterKnife.bind(this);
+
+        mMediaUri = getIntent().getData();
+        mFileType = getIntent().getExtras().getString(ParseConstants.KEY_FILE_TYPE);
 
         mRecipientsListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mRecipientsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -140,6 +146,7 @@ public class RecipientsActivity extends AppCompatActivity {
         message.put(ParseConstants.KEY_SENDER_ID, ParseUser.getCurrentUser().getObjectId());
         message.put(ParseConstants.KEY_SENDER_NAME, ParseUser.getCurrentUser().getUsername());
         message.put(ParseConstants.KEY_RECIPIENT_IDS, getRecipientIds());
+        message.put(ParseConstants.KEY_FILE_TYPE, mFileType);
 
         return message;
     }
